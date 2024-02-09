@@ -24,7 +24,11 @@ module.exports = function servePublicFiles () {
   }
 
   function verify (file: string, res: Response, next: NextFunction) {
-    if (file && (endsWithAllowlistedFileType(file) || (file === 'incident-support.kdbx'))) {
+    const allowedExtensions = ['.md', '.pdf']; // extension qui vont etre autorisé
+    const fileExtension = path.extname(file); 
+    let isValidExtension = allowedExtensions.some(ext => file.toLowerCase().endsWith(ext)); // récupère un boolean qui est true si le nom du fichier a pour extension soit .md soit .pdf
+
+    if (file && (endsWithAllowlistedFileType(file) || (file === 'incident-support.kdbx')) && isValidExtension) {
       file = security.cutOffPoisonNullByte(file)
 
       challengeUtils.solveIf(challenges.directoryListingChallenge, () => { return file.toLowerCase() === 'acquisitions.md' })
